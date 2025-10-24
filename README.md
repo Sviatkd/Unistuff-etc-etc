@@ -1,2 +1,2 @@
 # Unistuff-etc-etc
-see name
+University related homeworks or personal projects 2024-2025
