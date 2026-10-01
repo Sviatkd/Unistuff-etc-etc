@@ -1,0 +1,71 @@
+---
+title: "Untitled"
+format: html
+---
+
+
+```{r}
+library(tesseract)
+library(pdftools)
+library("quanteda.textmodels")
+library(factoextra)
+library(streamR)
+library(tidyverse)
+library(quanteda)
+library(quanteda.corpora)
+library(quanteda.textplots)
+library(quanteda.textstats)
+```
+
+```{r}
+pngs = pdftools::pdf_convert("D:\\Нова папка\\74-1.pdf")
+text = ocr(pngs)
+pngss = pdftools::pdf_convert("D:\\Нова папка\\Stpetersburg.pdf")
+textk = ocr(pngss)
+```
+
+
+```{r}
+tokk =  tokens(textk,remove_punct=TRUE,remove_symbols = TRUE, remove_numbers = TRUE)
+docfeat_matk=dfm(tokk)
+trimdocfeat = dfm_trim(docfeat_matk,min_docfreq = 3)
+topfeatures(docfeat_matk)
+toks_stopk = tokens_remove(tokk,c(stopwords::stopwords("english"),"the","of",",","and","‘","contracting","shall","parties","or",".",":","-",";","ofthe",")","party","treaty","commission","experts","customs",",","accordance","dispute","paragraph","provisions"))
+twdfmk <- dfm(toks_stopk)
+```
+
+
+```{r}
+tok =  tokens(text,remove_punct=TRUE,remove_symbols = TRUE, remove_numbers = TRUE)
+docfeat_mat=dfm(tok)
+trimdocfeat = dfm_trim(docfeat_mat,min_docfreq = 3)
+topfeatures(docfeat_mat)
+toks_stop = tokens_remove(tok,c(stopwords::stopwords("english"),"the","of",",","and","‘","contracting","shall","parties","or",".",":","-",";","ofthe",")","party","treaty","commission","experts","customs",",","accordance","dispute","paragraph","provisions"))
+twdfm <- dfm(toks_stop)
+```
+
+
+```{r}
+set.seed(123)
+twdfm = twdfm %>% dfm_tfidf()
+fviz_nbclust(x=as.matrix(t(twdfm)),FUNcluster = kmeans,method = "wss")
+clmod=kmeans(t(twdfm),centers = 4)
+quanteda.textplots::textplot_wordcloud(twdfm)
+pcamod1 = princomp(t(twdfm))
+pcamod = prcomp(twdfm)
+fviz_pca_biplot(pcamod)
+fviz_pca_biplot(pcamod1)
+```
+
+
+```{r}
+set.seed(123)
+twdfmk = twdfmk %>% dfm_tfidf()
+fviz_nbclust(x=as.matrix(t(twdfmk)),FUNcluster = kmeans,method = "wss")
+clmod=kmeans(t(twdfmk),centers = 4)
+quanteda.textplots::textplot_wordcloud(twdfmk)
+pcamod1k = princomp(t(twdfmk))
+pcamodk = prcomp(twdfmk)
+fviz_pca_biplot(pcamodk)
+fviz_pca_biplot(pcamod1k)
+```
